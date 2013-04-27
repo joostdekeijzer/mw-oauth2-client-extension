@@ -19,35 +19,27 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 
 $wgExtensionCredits['specialpage'][] = array(
 	'path' => __FILE__,
-	'name' => 'OAuth2Client',
+	'name' => 'OAuth2 Client',
 	'version' => '0.01',
 	'author' => array( 'Joost de Keijzer', '[http://dekeijzer.org]' ), 
 	'url' => 'http://dekeijzer.org',
-	'descriptionmsg' => 'oauth2client-desc'
+	'descriptionmsg' => 'oauth2client-act-as-a-client-to-any-oauth2-server'
 );
 
 // Create a twiter group
 $wgGroupPermissions['oauth2'] = $wgGroupPermissions['user'];
 
 $wgAutoloadClasses['SpecialOAuth2Client'] = dirname(__FILE__) . '/SpecialOAuth2Client.php';
-//$wgAutoloadClasses['TwitterOAuth'] = dirname(__FILE__) . '/twitteroauth/twitteroauth.php';
-//$wgAutoloadClasses['MwTwitterOAuth'] = dirname(__FILE__) . '/TwitterLogin.twitteroauth.php';
-//$wgAutoloadClasses['TwitterSigninUI'] = dirname(__FILE__) . '/TwitterLogin.body.php';
 
-//$wgExtensionMessagesFiles['TwitterLogin'] = dirname(__FILE__) .'/TwitterLogin.i18n.php';
-//$wgExtensionAliasFiles['TwitterLogin'] = dirname(__FILE__) .'/TwitterLogin.alias.php';
+$wgExtensionMessagesFiles['OAuth2Client'] = dirname(__FILE__) .'/OAuth2Client.i18n.php';
 
-$wgSpecialPages['TwitterLogin'] = 'SpecialOAuth2Client';
-$wgSpecialPageGroups['OAuth2Login'] = 'login';
+$wgSpecialPages['OAuth2Client'] = 'SpecialOAuth2Client';
+$wgSpecialPageGroups['OAuth2Client'] = 'login';
 
 //$wgHooks['LoadExtensionSchemaUpdates'][] = 'efSetupSpecialOAuth2ClientSchema';
 
-$tsu = new TwitterSigninUI;
-$wgHooks['BeforePageDisplay'][] = array( $tsu, 'efAddSigninButton' );
-
-$stl = new SpecialTwitterLogin;
-$wgHooks['UserLoadFromSession'][] = array($stl,'efTwitterAuth');
-$wgHooks['UserLogoutComplete'][] = array($stl,'efTwitterLogout');
+$OAuth2LoginButton = new OAuth2LoginButton;
+$wgHooks['BeforePageDisplay'][] = array( $OAuth2LoginButton, 'efAddSigninButton' );
 
 function efSetupSpecialOAuth2ClientSchema( $updater ) {
 	return true;
@@ -58,4 +50,23 @@ function efSetupSpecialOAuth2ClientSchema( $updater ) {
 	$updater->addExtensionUpdate( array( 'modifyField', 'twitter_user','twitter_id',
 		dirname(__FILE__) . '/schema/twitter_user.patch.twitter_id.sql', true ) );
 	return true;
+}
+
+class OAuth2LoginButton {
+	/**
+	 * Add a sign in with Twitter button but only when a user is not logged in
+	 */
+	public function efAddSigninButton( &$out, &$skin ) {
+		global $wgUser, $wgExtensionAssetsPath, $wgScriptPath;
+	
+		if ( !$wgUser->isLoggedIn() ) {
+			$link = SpecialPage::getTitleFor( 'OAuth2Client', 'redirect' )->getLinkUrl(); 
+			$out->addInlineScript('$j(document).ready(function(){
+				$j("#pt-anonlogin, #pt-login").after(\'<li id="pt-twittersignin">'
+				.'<a href="' . $link  . '">'
+				.wfMsg( 'oauth2client-login-with-oauth2' ).'</a></li>\');
+			})');
+		}
+		return true;
+	}
 }
