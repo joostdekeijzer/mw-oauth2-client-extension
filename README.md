@@ -20,4 +20,5 @@ Optional settings in global $wgOAuth2Client
     $wgOAuth2Client['configuration']['query_parameter_token'] = 'oauth_token'; // query parameter to use
 
 The callback url back to your wiki would be:
-http://your.wiki.domain/path/to/wiki/Special:OAuth2Client/callback
+
+    http://your.wiki.domain/path/to/wiki/Special:OAuth2Client/callback
