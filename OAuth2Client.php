@@ -20,7 +20,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 $wgExtensionCredits['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'OAuth2 Client',
-	'version' => '0.01',
+	'version' => '0.1',
 	'author' => array( 'Joost de Keijzer', '[http://dekeijzer.org]' ), 
 	'url' => 'http://dekeijzer.org',
 	'descriptionmsg' => 'oauth2client-act-as-a-client-to-any-oauth2-server'
@@ -36,10 +36,9 @@ $wgExtensionMessagesFiles['OAuth2Client'] = dirname(__FILE__) .'/OAuth2Client.i1
 $wgSpecialPages['OAuth2Client'] = 'SpecialOAuth2Client';
 $wgSpecialPageGroups['OAuth2Client'] = 'login';
 
+$wgHooks['PersonalUrls'][] = 'OAuth2ClientHooks::onPersonalUrls';
+$wgHooks['UserLogout'][] = 'OAuth2ClientHooks::onUserLogout';
 //$wgHooks['LoadExtensionSchemaUpdates'][] = 'efSetupSpecialOAuth2ClientSchema';
-
-$OAuth2LoginButton = new OAuth2LoginButton;
-$wgHooks['BeforePageDisplay'][] = array( $OAuth2LoginButton, 'efAddSigninButton' );
 
 function efSetupSpecialOAuth2ClientSchema( $updater ) {
 	return true;
@@ -52,20 +51,43 @@ function efSetupSpecialOAuth2ClientSchema( $updater ) {
 	return true;
 }
 
-class OAuth2LoginButton {
-	/**
-	 * Add a sign in with Twitter button but only when a user is not logged in
-	 */
-	public function efAddSigninButton( &$out, &$skin ) {
-		global $wgUser, $wgExtensionAssetsPath, $wgScriptPath;
-	
-		if ( !$wgUser->isLoggedIn() ) {
-			$link = SpecialPage::getTitleFor( 'OAuth2Client', 'redirect' )->getLinkUrl(); 
-			$out->addInlineScript('$j(document).ready(function(){
-				$j("#pt-anonlogin, #pt-login").after(\'<li id="pt-twittersignin">'
-				.'<a href="' . $link  . '">'
-				.wfMsg( 'oauth2client-login-with-oauth2' ).'</a></li>\');
-			})');
+class OAuth2ClientHooks {
+	public static function onPersonalUrls( array &$personal_urls, Title $title ) {
+		global $wgUser;
+		if( $wgUser->isLoggedIn() ) return true;
+
+		$inExt = ('OAuth2Client' == substr( $title->mUrlform, 0, 12) );
+		$personal_urls['anon_oauth_login'] = array(
+			'text' => wfMsg('oauth2client-login-with-oauth2'),
+			//'class' => ,
+			'active' => false,
+		);
+		if( $inExt ) {
+			$personal_urls['anon_oauth_login']['href'] = Skin::makeSpecialUrlSubpage( 'OAuth2Client', 'redirect' );
+		} else {
+			$personal_urls['anon_oauth_login']['href'] = Skin::makeSpecialUrlSubpage( 'OAuth2Client', 'redirect', wfArrayToCGI( array( 'returnto' => $title ) ) );
+		}
+
+		if( isset( $personal_urls['anonlogin'] ) ) {
+			if( $inExt ) {
+				$personal_urls['anonlogin']['href'] = Skin::makeSpecialUrl( 'Userlogin' );
+			}
+			$item = $personal_urls['anonlogin'];
+			unset( $personal_urls['anonlogin'] );
+			$personal_urls['anonlogin'] = $item;
+		}
+		return true;
+	}
+	public static function onUserLogout( &$user ) {
+		global $wgOut;
+		$dbr = wfGetDB( DB_SLAVE );
+		$row = $dbr->selectRow(
+			'external_user',
+			'*',
+			array( 'eu_local_id' => $user->getId() )
+		);
+		if( $row ) {
+			$wgOut->redirect( SpecialPage::getTitleFor( 'OAuth2Client', 'logout' )->getFullURL() );
 		}
 		return true;
 	}

@@ -88,6 +88,9 @@ class SpecialOAuth2Client extends SpecialPage {
 			case 'callback':
 				$this->_handleCallback();
 			break;
+			case 'logout':
+				$this->_logout();
+			break;
 			default:
 				$this->_default();
 			break;
@@ -96,6 +99,8 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _redirect() {
+		global $wgRequest;
+		$_SESSION['returnto'] = $wgRequest->getVal( 'returnto' );
 		$this->_oAuth2Service->authorize();
 	}
 
@@ -114,16 +119,34 @@ class SpecialOAuth2Client extends SpecialPage {
 			// new user!
 			$wgOut->redirect(SpecialPage::getTitleFor('Preferences')->getLinkUrl());
 		} else {
-			$wgOut->redirect('/');
+			if( isset( $_SESSION['returnto'] ) ) {
+				$title = Title::newFromText( $_SESSION['returnto'] );
+				unset( $_SESSION['returnto'] );
+			}
+
+			if( !$title instanceof Title || 0 > $title->mArticleID ) {
+				$title = Title::newMainPage();
+			}
+			$wgOut->redirect( $title->getFullURL() );
 		}
 		return true;
+	}
+
+	private function _logout() {
+		global $wgOut, $wgUser;
+		if( $wgUser->isLoggedIn() ) $wgUser->logout();
+
+		$wgOut->setPagetitle("OAuth2 logged out");
+		$wgOut->addWikiMsg( 'You have been logged out of this wiki.' );
+
+		$wgOut->addHTML( '<a href="' . $this->getTitle( 'redirect' )->getFullURL() .'">'
+			.wfMsg( 'You can login again using OAuth2' ).'</a>' );
 	}
 
 	private function _default(){
 		global $wgOut, $wgUser, $wgScriptPath, $wgExtensionAssetsPath;
 
 		$wgOut->setPagetitle("OAuth2 Login");
-
 		if ( !$wgUser->isLoggedIn() ) {
 			$wgOut->addWikiMsg( 'oauth2client-you-can-register-to-this-wiki-using-oauth2' );
 
