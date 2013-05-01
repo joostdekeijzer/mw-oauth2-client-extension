@@ -165,7 +165,7 @@ class SpecialOAuth2Client extends SpecialPage {
 
 		// TODO: make id, name etc. parameters configurable
 		$oAuth2Id = $response['id'];
-		$oAuth2Name = $response['full_name'];
+		$oAuth2Name = $response['first_name'] .( strlen($response['last_name']) > 0 ? ' ' . $response['last_name'] : '');
 
 		// not required
 		$oAuth2Email = ( isset( $response['email'] ) ? $response['email'] : '' );
