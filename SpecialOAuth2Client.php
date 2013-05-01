@@ -60,7 +60,6 @@ class SpecialOAuth2Client extends SpecialPage {
 			$wgOAuth2Client['client']['secret'],
 			$wgServer . str_replace( '$1', 'Special:OAuth2Client/callback', $wgArticlePath )
 			//SpecialPage::getTitleFor( 'OAuth2Client', 'callback' )->getFullURL() // setting variant does not work on specialpages
-			//'http://wikis.energielinq.local/scraptool/wiki/Special:OAuth2Client/callback'
 		);
 
 		// configuration of service
