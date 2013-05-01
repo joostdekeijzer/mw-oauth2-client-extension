@@ -53,11 +53,14 @@ class SpecialOAuth2Client extends SpecialPage {
 	public function __construct() {
 		parent::__construct('OAuth2Client'); // ???: wat doet dit?
 		global $wgOAuth2Client, $wgScriptPath;
+		global $wgServer, $wgArticlePath;
 
 		$client = new OAuth2\Client(
 			$wgOAuth2Client['client']['id'],
 			$wgOAuth2Client['client']['secret'],
-			SpecialPage::getTitleFor( 'OAuth2Client', 'callback' )->getFullURL()
+			$wgServer . str_replace( '$1', 'Special:OAuth2Client/callback', $wgArticlePath )
+			//SpecialPage::getTitleFor( 'OAuth2Client', 'callback' )->getFullURL() // setting variant does not work on specialpages
+			//'http://wikis.energielinq.local/scraptool/wiki/Special:OAuth2Client/callback'
 		);
 
 		// configuration of service
