@@ -191,9 +191,9 @@ class SpecialOAuth2Client extends SpecialPage {
 			$checkName = $oAuth2Name . ( $counter > 1 ? ' ' . $counter : '' );
 			$user = User::newFromName( $checkName, 'creatable' );
 			$counter ++;
-			$success = ($user->getId() == 0);
+			$success = (false !== $user && $user->getId() == 0);
 		}
-		if( $user->getId() != 0 ) {
+		if( false === $user || $user->getId() != 0 ) {
 			throw new MWException('Unable to create new user account, please contact the Wiki administrator');
 		}
 		$user->setRealName($oAuth2Name);
