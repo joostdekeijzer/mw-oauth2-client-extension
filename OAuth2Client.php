@@ -64,9 +64,16 @@ class OAuth2ClientHooks {
 		# see SkinTemplate->buildPersonalUrls()
 		$page = Title::newFromURL( $wgRequest->getVal( 'title', '' ) );
 
+		$sevice_name = isset( $wgOAuth2Client['configuration']['sevice_name'] ) && 0 < strlen( $wgOAuth2Client['configuration']['sevice_name'] ) ? $wgOAuth2Client['configuration']['sevice_name'] : 'OAuth2';
+		if( isset( $wgOAuth2Client['configuration']['sevice_login_link_text'] ) && 0 < strlen( $wgOAuth2Client['configuration']['sevice_login_link_text'] ) ) {
+			$sevice_login_link_text = $wgOAuth2Client['configuration']['sevice_login_link_text'];
+		} else {
+			$sevice_login_link_text = wfMsg('oauth2client-header-link-text', $sevice_name);
+		}
+
 		$inExt = ('OAuth2Client' == substr( $page->mUrlform, 0, 12) );
 		$personal_urls['anon_oauth_login'] = array(
-			'text' => ( isset( $wgOAuth2Client['configuration']['sevice_login_link_text'] ) && 0 < strlen( $wgOAuth2Client['configuration']['sevice_login_link_text'] ) ? $wgOAuth2Client['configuration']['sevice_login_link_text'] : wfMsg('oauth2client-login-with-oauth2') ),
+			'text' => $sevice_login_link_text,
 			//'class' => ,
 			'active' => false,
 		);
