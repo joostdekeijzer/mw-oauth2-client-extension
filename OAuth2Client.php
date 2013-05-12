@@ -53,10 +53,18 @@ function efSetupSpecialOAuth2ClientSchema( $updater ) {
 
 class OAuth2ClientHooks {
 	public static function onPersonalUrls( array &$personal_urls, Title $title ) {
-		global $wgUser, $wgRequest;
+		global $wgOAuth2Client, $wgUser, $wgRequest;
 		if( $wgUser->isLoggedIn() ) return true;
 
-		$inExt = ('OAuth2Client' == substr( $title->mUrlform, 0, 12) );
+
+		# Due to bug 32276, if a user does not have read permissions, 
+		# $this->getTitle() will just give Special:Badtitle, which is 
+		# not especially useful as a returnto parameter. Use the title 
+		# from the request instead, if there was one.
+		# see SkinTemplate->buildPersonalUrls()
+		$page = Title::newFromURL( $wgRequest->getVal( 'title', '' ) );
+
+		$inExt = ('OAuth2Client' == substr( $page->mUrlform, 0, 12) );
 		$personal_urls['anon_oauth_login'] = array(
 			'text' => wfMsg('oauth2client-login-with-oauth2'),
 			//'class' => ,
@@ -73,7 +81,7 @@ class OAuth2ClientHooks {
 			$personal_urls['anon_oauth_login']['href'] = Skin::makeSpecialUrlSubpage(
 				'OAuth2Client',
 				'redirect',
-				wfArrayToCGI( array( 'returnto' => Title::newFromURL( $wgRequest->getVal( 'title', '' ) ) ) )
+				wfArrayToCGI( array( 'returnto' => $page ) )
 			);
 		}
 
