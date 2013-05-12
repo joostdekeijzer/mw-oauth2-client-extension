@@ -121,6 +121,7 @@ class SpecialOAuth2Client extends SpecialPage {
 			// new user!
 			$wgOut->redirect(SpecialPage::getTitleFor('Preferences')->getLinkUrl());
 		} else {
+			$title = null;
 			if( isset( $_SESSION['returnto'] ) ) {
 				$title = Title::newFromText( $_SESSION['returnto'] );
 				unset( $_SESSION['returnto'] );
