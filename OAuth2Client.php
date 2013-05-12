@@ -66,7 +66,7 @@ class OAuth2ClientHooks {
 
 		$inExt = ('OAuth2Client' == substr( $page->mUrlform, 0, 12) );
 		$personal_urls['anon_oauth_login'] = array(
-			'text' => wfMsg('oauth2client-login-with-oauth2'),
+			'text' => ( isset( $wgOAuth2Client['configuration']['sevice_login_link_text'] ) && 0 < strlen( $wgOAuth2Client['configuration']['sevice_login_link_text'] ) ? $wgOAuth2Client['configuration']['sevice_login_link_text'] : wfMsg('oauth2client-login-with-oauth2') ),
 			//'class' => ,
 			'active' => false,
 		);

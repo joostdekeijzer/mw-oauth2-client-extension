@@ -136,25 +136,25 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _logout() {
-		global $wgOut, $wgUser;
+		global $wgOAuth2Client, $wgOut, $wgUser;
 		if( $wgUser->isLoggedIn() ) $wgUser->logout();
 
-		$wgOut->setPagetitle("OAuth2 logged out");
-		$wgOut->addWikiMsg( 'You have been logged out of this wiki.' );
+		$sevice_name = ( isset( $wgOAuth2Client['configuration']['sevice_name'] ) && 0 < strlen( $wgOAuth2Client['configuration']['sevice_name'] ) ? $wgOAuth2Client['configuration']['sevice_name'] : 'OAuth2' );
 
-		$wgOut->addHTML( '<a href="' . $this->getTitle( 'redirect' )->getFullURL() .'">'
-			.wfMsg( 'You can login again using OAuth2' ).'</a>' );
+		$wgOut->setPagetitle( wfMsg( 'oauth2client-logout-header', $sevice_name) );
+		$wgOut->addWikiMsg( 'oauth2client-logged-out' );
+		$wgOut->addWikiMsg( 'oauth2client-login-with-oauth2-again', $this->getTitle( 'redirect' )->getPrefixedURL(), $sevice_name );
 	}
 
 	private function _default(){
-		global $wgOut, $wgUser, $wgScriptPath, $wgExtensionAssetsPath;
+		global $wgOAuth2Client, $wgOut, $wgUser, $wgScriptPath, $wgExtensionAssetsPath;
+		$sevice_name = ( isset( $wgOAuth2Client['configuration']['sevice_name'] ) && 0 < strlen( $wgOAuth2Client['configuration']['sevice_name'] ) ? $wgOAuth2Client['configuration']['sevice_name'] : 'OAuth2' );
 
-		$wgOut->setPagetitle("OAuth2 Login");
+		$wgOut->setPagetitle( wfMsg( 'oauth2client-login-header', $sevice_name) );
 		if ( !$wgUser->isLoggedIn() ) {
-			$wgOut->addWikiMsg( 'oauth2client-you-can-register-to-this-wiki-using-oauth2' );
+			$wgOut->addWikiMsg( 'oauth2client-you-can-login-to-this-wiki-with-oauth2', $sevice_name );
+			$wgOut->addWikiMsg( 'oauth2client-login-with-oauth2', $this->getTitle( 'redirect' )->getPrefixedURL(), $sevice_name );
 
-			$wgOut->addHTML( '<a href="' . $this->getTitle( 'redirect' )->getFullURL() .'">'
-				.wfMsg( 'oauth2client-login-with-oauth2' ).'</a>' );
 		} else {
 			$wgOut->addWikiMsg( 'oauth2client-youre-already-loggedin' );
 		}
