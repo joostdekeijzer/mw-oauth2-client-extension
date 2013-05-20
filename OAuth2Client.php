@@ -71,7 +71,7 @@ class OAuth2ClientHooks {
 			$sevice_login_link_text = wfMsg('oauth2client-header-link-text', $sevice_name);
 		}
 
-		$inExt = ('OAuth2Client' == substr( $page->mUrlform, 0, 12) );
+		$inExt = ( null == $page || ('OAuth2Client' == substr( $page->mUrlform, 0, 12) ) );
 		$personal_urls['anon_oauth_login'] = array(
 			'text' => $sevice_login_link_text,
 			//'class' => ,
