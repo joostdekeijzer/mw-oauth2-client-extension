@@ -1,8 +1,8 @@
 <?php
-
 /**
  * Internationalization file for the OAuth2Client extension.
  *
+ * @license: LGPL (GNU Lesser General Public License) http://www.gnu.org/licenses/lgpl.html
  * @file OAuth2Client.i18n.php
  */
 

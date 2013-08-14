@@ -25,3 +25,7 @@ Optional settings in global $wgOAuth2Client
 The callback url back to your wiki would be:
 
     http://your.wiki.domain/path/to/wiki/Special:OAuth2Client/callback
+
+License
+-------
+LGPL (GNU Lesser General Public License) http://www.gnu.org/licenses/lgpl.html
