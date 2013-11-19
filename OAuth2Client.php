@@ -96,9 +96,6 @@ class OAuth2ClientHooks {
 			if( $inExt ) {
 				$personal_urls['anonlogin']['href'] = Skin::makeSpecialUrl( 'Userlogin' );
 			}
-			$item = $personal_urls['anonlogin'];
-			unset( $personal_urls['anonlogin'] );
-			$personal_urls['anonlogin'] = $item;
 		}
 		return true;
 	}
