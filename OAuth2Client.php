@@ -38,18 +38,6 @@ $wgSpecialPageGroups['OAuth2Client'] = 'login';
 
 $wgHooks['PersonalUrls'][] = 'OAuth2ClientHooks::onPersonalUrls';
 $wgHooks['UserLogout'][] = 'OAuth2ClientHooks::onUserLogout';
-//$wgHooks['LoadExtensionSchemaUpdates'][] = 'efSetupSpecialOAuth2ClientSchema';
-
-function efSetupSpecialOAuth2ClientSchema( $updater ) {
-	return true;
-	$updater->addExtensionUpdate( array( 'addTable', 'twitter_user',
-		dirname(__FILE__) . '/schema/twitter_user.sql', true ) );
-	$updater->addExtensionUpdate( array( 'modifyField', 'twitter_user','user_id',
-		dirname(__FILE__) . '/schema/twitter_user.patch.user_id.sql', true ) );
-	$updater->addExtensionUpdate( array( 'modifyField', 'twitter_user','twitter_id',
-		dirname(__FILE__) . '/schema/twitter_user.patch.twitter_id.sql', true ) );
-	return true;
-}
 
 class OAuth2ClientHooks {
 	public static function onPersonalUrls( array &$personal_urls, Title $title ) {
