@@ -20,7 +20,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 $wgExtensionCredits['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'OAuth2 Client',
-	'version' => '0.1',
+	'version' => '0.2',
 	'author' => array( 'Joost de Keijzer', '[http://dekeijzer.org]' ), 
 	'url' => 'http://dekeijzer.org',
 	'descriptionmsg' => 'oauth2client-act-as-a-client-to-any-oauth2-server'
