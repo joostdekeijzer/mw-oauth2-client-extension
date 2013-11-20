@@ -29,3 +29,11 @@ The callback url back to your wiki would be:
 License
 -------
 LGPL (GNU Lesser General Public License) http://www.gnu.org/licenses/lgpl.html
+
+OAuth2 vendor library
+---------------------
+Currently, a modified version of the vznet OAuth2 client library is used. Since aug. 2013, this library is no longer in development.
+
+Alternatives could be:
+- https://github.com/adoy/PHP-OAuth2
+- https://github.com/php-loep/oauth2-client
