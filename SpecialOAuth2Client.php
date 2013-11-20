@@ -51,22 +51,11 @@ class SpecialOAuth2Client extends SpecialPage {
 	 * $wgOAuth2Client['configuration']['api_endpoint']
 	 */
 	public function __construct() {
+		if( !self::OAuthEnabled() ) return;
+
 		parent::__construct('OAuth2Client'); // ???: wat doet dit?
 		global $wgOAuth2Client, $wgScriptPath;
 		global $wgServer, $wgArticlePath;
-
-		if(
-			!isset(
-				$wgOAuth2Client['client']['id'],
-				$wgOAuth2Client['client']['secret'],
-				$wgOAuth2Client['configuration']['authorize_endpoint'],
-				$wgOAuth2Client['configuration']['access_token_endpoint'],
-				$wgOAuth2Client['configuration']['http_bearer_token'],
-				$wgOAuth2Client['configuration']['query_parameter_token']
-			)
-		) {
-			return;
-		}
 
 		$client = new OAuth2\Client(
 			$wgOAuth2Client['client']['id'],
@@ -114,7 +103,7 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _redirect() {
-		if( !isset( $this->_oAuth2Service ) ) return false;
+		if( !self::OAuthEnabled() ) return false;
 
 		global $wgRequest;
 		$_SESSION['returnto'] = $wgRequest->getVal( 'returnto' );
@@ -122,7 +111,7 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _handleCallback(){
-		if( !isset( $this->_oAuth2Service ) ) return false;
+		if( !self::OAuthEnabled() ) return false;
 
 		global $wgOAuth2Client, $wgOut;
 		if( $this->_oAuth2Service->getAccessToken() ) {
@@ -153,8 +142,6 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _logout() {
-		if( !isset( $this->_oAuth2Service ) ) return false;
-
 		global $wgOAuth2Client, $wgOut, $wgUser;
 		if( $wgUser->isLoggedIn() ) $wgUser->logout();
 
@@ -166,8 +153,6 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _default(){
-		if( !isset( $this->_oAuth2Service ) ) return false;
-
 		global $wgOAuth2Client, $wgOut, $wgUser, $wgScriptPath, $wgExtensionAssetsPath;
 		$sevice_name = ( isset( $wgOAuth2Client['configuration']['sevice_name'] ) && 0 < strlen( $wgOAuth2Client['configuration']['sevice_name'] ) ? $wgOAuth2Client['configuration']['sevice_name'] : 'OAuth2' );
 
@@ -183,8 +168,6 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	protected function _userHandling( $response ) {
-		if( !isset( $this->_oAuth2Service ) ) return false;
-
 		global $wgOAuth2Client, $wgAuth;
 
 		// TODO: make id, name etc. parameters configurable
@@ -240,4 +223,16 @@ class SpecialOAuth2Client extends SpecialPage {
 		return $user;
 	}
 
+	static function OAuthEnabled() {
+		global $wgOAuth2Client;
+
+		return isset(
+			$wgOAuth2Client['client']['id'],
+			$wgOAuth2Client['client']['secret'],
+			$wgOAuth2Client['configuration']['authorize_endpoint'],
+			$wgOAuth2Client['configuration']['access_token_endpoint'],
+			$wgOAuth2Client['configuration']['http_bearer_token'],
+			$wgOAuth2Client['configuration']['query_parameter_token']
+		);
+	}
 }

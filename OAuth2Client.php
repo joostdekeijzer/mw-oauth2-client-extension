@@ -41,6 +41,8 @@ $wgHooks['UserLogout'][] = 'OAuth2ClientHooks::onUserLogout';
 
 class OAuth2ClientHooks {
 	public static function onPersonalUrls( array &$personal_urls, Title $title ) {
+		if( !SpecialOAuth2Client::OAuthEnabled() ) return true;
+
 		global $wgOAuth2Client, $wgUser, $wgRequest;
 		if( $wgUser->isLoggedIn() ) return true;
 
@@ -88,6 +90,8 @@ class OAuth2ClientHooks {
 		return true;
 	}
 	public static function onUserLogout( &$user ) {
+		if( !SpecialOAuth2Client::OAuthEnabled() ) return true;
+
 		global $wgOut;
 		$dbr = wfGetDB( DB_SLAVE );
 		$row = $dbr->selectRow(
