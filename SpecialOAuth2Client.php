@@ -55,6 +55,19 @@ class SpecialOAuth2Client extends SpecialPage {
 		global $wgOAuth2Client, $wgScriptPath;
 		global $wgServer, $wgArticlePath;
 
+		if(
+			!isset(
+				$wgOAuth2Client['client']['id'],
+				$wgOAuth2Client['client']['secret'],
+				$wgOAuth2Client['configuration']['authorize_endpoint'],
+				$wgOAuth2Client['configuration']['access_token_endpoint'],
+				$wgOAuth2Client['configuration']['http_bearer_token'],
+				$wgOAuth2Client['configuration']['query_parameter_token']
+			)
+		) {
+			return;
+		}
+
 		$client = new OAuth2\Client(
 			$wgOAuth2Client['client']['id'],
 			$wgOAuth2Client['client']['secret'],
@@ -101,12 +114,16 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _redirect() {
+		if( !isset( $this->_oAuth2Service ) ) return false;
+
 		global $wgRequest;
 		$_SESSION['returnto'] = $wgRequest->getVal( 'returnto' );
 		$this->_oAuth2Service->authorize();
 	}
 
 	private function _handleCallback(){
+		if( !isset( $this->_oAuth2Service ) ) return false;
+
 		global $wgOAuth2Client, $wgOut;
 		if( $this->_oAuth2Service->getAccessToken() ) {
 			$requestApiResponse = $this->_oAuth2Service->callApiEndpoint($wgOAuth2Client['configuration']['api_endpoint']);
@@ -136,6 +153,8 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _logout() {
+		if( !isset( $this->_oAuth2Service ) ) return false;
+
 		global $wgOAuth2Client, $wgOut, $wgUser;
 		if( $wgUser->isLoggedIn() ) $wgUser->logout();
 
@@ -147,6 +166,8 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	private function _default(){
+		if( !isset( $this->_oAuth2Service ) ) return false;
+
 		global $wgOAuth2Client, $wgOut, $wgUser, $wgScriptPath, $wgExtensionAssetsPath;
 		$sevice_name = ( isset( $wgOAuth2Client['configuration']['sevice_name'] ) && 0 < strlen( $wgOAuth2Client['configuration']['sevice_name'] ) ? $wgOAuth2Client['configuration']['sevice_name'] : 'OAuth2' );
 
@@ -162,6 +183,8 @@ class SpecialOAuth2Client extends SpecialPage {
 	}
 
 	protected function _userHandling( $response ) {
+		if( !isset( $this->_oAuth2Service ) ) return false;
+
 		global $wgOAuth2Client, $wgAuth;
 
 		// TODO: make id, name etc. parameters configurable
