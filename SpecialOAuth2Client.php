@@ -17,12 +17,6 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( 'This is a MediaWiki extension, and must be run from within MediaWiki.' );
 }
 
-spl_autoload_register(function ($class) {
-	if( substr( $class, 0, 7 ) == 'OAuth2\\' ) {
-		include __DIR__ . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'oauth_2' . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
-	}
-});
-
 class SpecialOAuth2Client extends SpecialPage {
 
 	private $_clientId;

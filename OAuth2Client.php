@@ -17,6 +17,18 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 	die( 'This is a MediaWiki extension, and must be run from within MediaWiki.' );
 }
 
+foreach(array('Client', 'DataStore', 'Exception', 'HttpClient', 'Service', 'Token') as $class) {
+	$wgAutoloadClasses[sprintf('%s\%s', 'OAuth2', $class)] = sprintf('%s/%s/%s.php', OAuth2ClientHooks::getOAuth2VendorClassPath(), 'OAuth2', $class);
+}
+$wgAutoloadClasses[sprintf('%s\%s\%s', 'OAuth2', 'DataStore', 'Session')] = sprintf('%s/%s/%s/%s.php', OAuth2ClientHooks::getOAuth2VendorClassPath(), 'OAuth2', 'DataStore', 'Session');
+$wgAutoloadClasses[sprintf('%s\%s\%s', 'OAuth2', 'Service', 'Configuration')] = sprintf('%s/%s/%s/%s.php', OAuth2ClientHooks::getOAuth2VendorClassPath(), 'OAuth2', 'Service', 'Configuration');
+
+spl_autoload_register(function ($class) {
+	if( substr( $class, 0, 7 ) == 'OAuth2\\' ) {
+		include OAuth2ClientHooks::getOAuth2VendorClassPath() . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
+	}
+});
+
 $wgExtensionCredits['specialpage'][] = array(
 	'path' => __FILE__,
 	'name' => 'OAuth2 Client',
@@ -32,6 +44,7 @@ $wgGroupPermissions['oauth2'] = $wgGroupPermissions['user'];
 $wgAutoloadClasses['SpecialOAuth2Client'] = dirname(__FILE__) . '/SpecialOAuth2Client.php';
 
 $wgExtensionMessagesFiles['OAuth2Client'] = dirname(__FILE__) .'/OAuth2Client.i18n.php';
+$wgExtensionMessagesFiles['OAuth2ClientAlias'] = dirname(__FILE__) .'/OAuth2Client.alias.php';
 
 $wgSpecialPages['OAuth2Client'] = 'SpecialOAuth2Client';
 $wgSpecialPageGroups['OAuth2Client'] = 'login';
@@ -103,5 +116,9 @@ class OAuth2ClientHooks {
 			$wgOut->redirect( SpecialPage::getTitleFor( 'OAuth2Client', 'logout' )->getFullURL() );
 		}
 		return true;
+	}
+
+	public static function getOAuth2VendorClassPath() {
+		return dirname(__FILE__) . DIRECTORY_SEPARATOR . 'vendors' . DIRECTORY_SEPARATOR . 'oauth_2';
 	}
 }
