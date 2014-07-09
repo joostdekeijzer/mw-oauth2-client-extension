@@ -115,6 +115,7 @@ class SpecialOAuth2Client extends SpecialPage {
 		}
 
 		$user = $this->_userHandling( $requestApiResponse );
+		$user->setOption("rememberpassword", 1);
 		$user->setCookies();
 
 		if( $user->getRegistration() > wfTimestamp( TS_MW ) - 1 ) {
