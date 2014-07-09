@@ -51,6 +51,7 @@ $wgSpecialPageGroups['OAuth2Client'] = 'login';
 
 $wgHooks['PersonalUrls'][] = 'OAuth2ClientHooks::onPersonalUrls';
 $wgHooks['UserLogout'][] = 'OAuth2ClientHooks::onUserLogout';
+$wgHooks['GetPreferences'][] = 'OAuth2ClientHooks::RedirectPrefs';
 
 class OAuth2ClientHooks {
 	public static function onPersonalUrls( array &$personal_urls, Title $title ) {
@@ -115,6 +116,13 @@ class OAuth2ClientHooks {
 		if( $row ) {
 			$wgOut->redirect( SpecialPage::getTitleFor( 'OAuth2Client', 'logout' )->getFullURL() );
 		}
+		return true;
+	}
+
+	// Remove reset password link and remember password checkbox from preferences page
+	public static function RedirectPrefs($user, &$preferences) {
+		unset($preferences["password"]);
+		unset($preferences["rememberpassword"]);
 		return true;
 	}
 
