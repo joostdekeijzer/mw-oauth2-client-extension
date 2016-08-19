@@ -115,6 +115,7 @@ class SpecialOAuth2Client extends SpecialPage {
 		}
 
 		$user = $this->_userHandling( $requestApiResponse );
+		$user->setOption("rememberpassword", 1);
 		$user->setCookies();
 
 		if( $user->getRegistration() > wfTimestamp( TS_MW ) - 1 ) {
@@ -127,7 +128,7 @@ class SpecialOAuth2Client extends SpecialPage {
 				unset( $_SESSION['returnto'] );
 			}
 
-			if( !$title instanceof Title || 0 > $title->mArticleID ) {
+			if( !$title instanceof Title ) {
 				$title = Title::newMainPage();
 			}
 			$wgOut->redirect( $title->getFullURL() );
