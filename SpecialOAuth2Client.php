@@ -43,6 +43,7 @@ class SpecialOAuth2Client extends SpecialPage {
 	 * $wgOAuth2Client['configuration']['http_bearer_token']
 	 * $wgOAuth2Client['configuration']['query_parameter_token']
 	 * $wgOAuth2Client['configuration']['api_endpoint']
+	 * $wgOAuth2Client['configuration']['scope'],
 	 */
 	public function __construct() {
 		if( !self::OAuthEnabled() ) return;
@@ -71,7 +72,7 @@ class SpecialOAuth2Client extends SpecialPage {
 		// your own implementation
 		$dataStore = new OAuth2\DataStore\Session();
 
-		$scope = null;
+		$scope = $wgOAuth2Client['configuration']['scope'];
 
 		$this->_oAuth2Service = new OAuth2\Service($client, $configuration, $dataStore, $scope);
 	}
